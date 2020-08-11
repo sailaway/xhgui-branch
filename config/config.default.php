@@ -43,7 +43,7 @@ return array(
     },
 
     'profiler.filter_path' => array(
-        //'/home/admin/www/xhgui/webroot','F:/phpPro'
+        '/data/www/xhgui-branch-medusa/webroot',//'F:/phpPro'
     )
 
 );
