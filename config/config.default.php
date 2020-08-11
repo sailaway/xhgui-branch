@@ -16,11 +16,11 @@ return array(
     // 'save.handler' => 'file',
     // 'save.handler.filename' => dirname(__DIR__) . '/cache/' . 'xhgui.data.' . microtime(true) . '_' . substr(md5($url), 0, 6),
     
-    'save.handler' => 'file',
+    'save.handler' => 'mongodb',
 
     // Needed for file save handler. Beware of file locking. You can adujst this file path
     // to reduce locking problems (eg uniqid, time ...)
-    'save.handler.filename' => __DIR__.'/../data/xhgui_'.date('Ymd').'.dat',
+    // 'save.handler.filename' => __DIR__.'/../data/xhgui_'.date('Ymd').'.dat',
     'db.host' => 'mongodb://127.0.0.1:27017',
     'db.db' => 'xhprof',
 
@@ -30,7 +30,7 @@ return array(
     'templates.path' => dirname(__DIR__) . '/src/templates',
     'date.format' => 'Y-m-d H:i:s',
     'detail.count' => 6,
-    'page.limit' => 25,
+    'page.limit' => 100,
 
     // Profile 1 in 100 requests.
     // You can return true to profile every request.
