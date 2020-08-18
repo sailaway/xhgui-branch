@@ -17,7 +17,7 @@ class Xhgui_Profiles
     /**
      * Get the latest profile data.
      *
-     * @return Xhgui_Profile
+     * @return Xhgui_Profile | Xhgui_NewProfile
      */
     public function latest()
     {
@@ -37,7 +37,7 @@ class Xhgui_Profiles
      * Get a single profile run by id.
      *
      * @param string $id The id of the profile to get.
-     * @return Xhgui_Profile
+     * @return Xhgui_Profile | Xhgui_NewProfile
      */
     public function get($id)
     {
@@ -279,10 +279,10 @@ class Xhgui_Profiles
     }
 
     /**
-     * Converts arrays + MongoCursors into Xhgui_Profile instances.
+     * Converts arrays + MongoCursors into Xhgui_Profile | Xhgui_NewProfile instances.
      *
      * @param array|MongoCursor $data The data to transform.
-     * @return Xhgui_Profile|array The transformed/wrapped results.
+     * @return Xhgui_Profile|Xhgui_NewProfile|array The transformed/wrapped results.
      */
     protected function _wrap($data)
     {
@@ -291,11 +291,18 @@ class Xhgui_Profiles
         }
 
         if (is_array($data)) {
+            if (isset($data['profile']['function'])){
+                return new Xhgui_NewProfile($data);
+            }
             return new Xhgui_Profile($data);
         }
         $results = array();
         foreach ($data as $row) {
-            $results[] = new Xhgui_Profile($row);
+            if (isset($row['profile']['function'])){
+                $results[] = new Xhgui_NewProfile($row);
+            } else {
+                $results[] = new Xhgui_Profile($row);
+            }
         }
         return $results;
     }

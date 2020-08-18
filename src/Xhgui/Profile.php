@@ -17,17 +17,45 @@ class Xhgui_Profile
     protected $_visited;
     protected $_sql = array();
 
+    const METRIC_KEYS = [
+        'ct' => [
+            'key' => 'ct',
+            'title' => '调用次数',
+            'desc' => "方法调用总耗时"
+        ],
+        'wt' => [
+            'key' => 'wt',
+            'title' => '执行耗时',
+            'desc' => '在调用前记录一个时间，函数方法调用完毕后，计算时间差'
+        ],
+        'cpu' => [
+            'key' => 'cpu',
+            'title' => 'CPU时间',
+            'desc' => '当进程让出cpu使用权后，将不再计算cpu时间。通过调用系统调用getrusage获取进程的占用cpu数据'
+        ],
+        'mu' => [
+            'key' => 'mu',
+            'title' => '方法使用内存',
+            'desc' => '在调用前记录一个内存占用，函数方法调用完毕后，计算内存差。调用的是zend_memory_usage获取内存占用情况'
+        ],
+        'pmu' => [
+            'key' => 'pmu',
+            'title' => '方法内存峰值',
+            'desc' => '函数方法所使用的内存峰值，调用的是zend_memory_peak_usage获取内存情况'
+        ],
+    ];
+
     protected $_keys = array('ct', 'wt', 'cpu', 'mu', 'pmu');
     protected $_exclusiveKeys = array('ewt', 'ecpu', 'emu', 'epmu');
     protected $_functionCount;
 
-    public function __construct($profile, $convert = true)
+    public function __construct($data, $convert = true)
     {
-        $this->_data = $profile;
-        if (!empty($profile['profile']) && $convert) {
+        $this->_data = $data;
+        if (!empty($data['profile']) && $convert) {
             $this->_process();
         }
-        $this->_sql = isset($profile['sql'])?$profile['sql']:array();
+        $this->_sql = isset($data['sql'])?$data['sql']:array();
     }
 
     /**
@@ -37,6 +65,8 @@ class Xhgui_Profile
      * method are aggregated. We are not able to maintain a full tree structure
      * in any case, as xhprof only keeps one level of detail.
      *
+     * _process 通过 _sumKeys 统计的是同一个函数在整体请求下的总的时间累加
+     * 并不能体现函数调用包含关系下的时间累加，因此体现在火焰图中的时候是不正确的
      * @return void
      */
     protected function _process()
@@ -353,7 +383,8 @@ class Xhgui_Profile
      *
      * We should determine how many ==>d options there are, and equally
      * split the cost of d==>e across them since d==>e represents the sum total of all calls.
-     *
+     * 该函数是用来计算函数本身使用的时间，通过parent 减去children function的总时间来实现，但是我们并不需要
+     * 因为新的数据结构赋予了我们新的计算方式
      * Notes:
      *  Function names are not unique, but we're merging them
      *
@@ -592,7 +623,7 @@ class Xhgui_Profile
     {
         $valid = array_merge($this->_keys, $this->_exclusiveKeys);
         if (!in_array($metric, $valid)) {
-            throw new Exception("Unknown metric '$metric'. Cannot generate flamegraph.");
+            throw new \Exception("Unknown metric '$metric'. Cannot generate flamegraph.");
         }
         $this->calculateSelf();
 
@@ -607,7 +638,7 @@ class Xhgui_Profile
         $flamegraph = $this->_flamegraphData(self::NO_PARENT, $main, $metric, $threshold);
         return array('data' => array_shift($flamegraph), 'sort' => $this->_visited);
     }
-
+    
     protected function _flamegraphData($parentName, $main, $metric, $threshold, $parentIndex = null)
     {
         $result = array();

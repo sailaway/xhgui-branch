@@ -98,6 +98,9 @@ if ($extension == 'uprofiler' && extension_loaded('uprofiler')) {
     uprofiler_enable(UPROFILER_FLAGS_CPU | UPROFILER_FLAGS_MEMORY);
 } else if ($extension == 'tideways_xhprof' && extension_loaded('tideways_xhprof')) {
     tideways_xhprof_enable(TIDEWAYS_XHPROF_FLAGS_MEMORY | TIDEWAYS_XHPROF_FLAGS_MEMORY_MU | TIDEWAYS_XHPROF_FLAGS_MEMORY_PMU | TIDEWAYS_XHPROF_FLAGS_CPU);
+}  else if ($extension == 'tideways_xhprof_new' && extension_loaded('tideways_xhprof')) {
+    // default open TIDEWAYS_XHPROF_FLAGS_NO_BUILTINS, not output buildin funtions
+    tideways_xhprof_enable(TIDEWAYS_XHPROF_FLAGS_MEMORY | TIDEWAYS_XHPROF_FLAGS_MEMORY_MU | TIDEWAYS_XHPROF_FLAGS_MEMORY_PMU | TIDEWAYS_XHPROF_FLAGS_CPU | TIDEWAYS_XHPROF_FLAGS_NO_BUILTINS);
 } else if ($extension == 'tideways' && extension_loaded('tideways')) {
     tideways_enable(TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY);
     tideways_span_create('sql');
@@ -118,6 +121,10 @@ register_shutdown_function(
             $data['profile'] = uprofiler_disable();
         } else if ($extension == 'tideways_xhprof' && extension_loaded('tideways_xhprof')) {
             $data['profile'] = tideways_xhprof_disable();
+        } else if ($extension == 'tideways_xhprof_new' && extension_loaded('tideways_xhprof')) {
+            $ret = tideways_xhprof_disable();
+            // use the first main node
+            $data['profile'] = $ret[0];
         } else if ($extension == 'tideways' && extension_loaded('tideways')) {
             $data['profile'] = tideways_disable();
             $sqlData = tideways_get_spans();

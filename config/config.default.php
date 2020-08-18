@@ -6,10 +6,12 @@ return array(
     'debug' => false,
     'mode' => 'development',
     /*
-     * support extension: uprofiler, tideways_xhprof, tideways, xhprof
+     * support extension: uprofiler, tideways_xhprof, tideways, xhprof,tideways_xhprof_new
+     * tideways_xhprof_new is the new format of tideways_xhprof extension,see https://github.com/sailaway/php-xhprof-extension
+     * 
      * default: xhprof
      */
-    'extension' => 'tideways_xhprof',
+    'extension' => 'tideways_xhprof_new',
 
     // Can be either mongodb or file.
     

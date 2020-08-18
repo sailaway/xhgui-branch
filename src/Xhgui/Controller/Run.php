@@ -296,11 +296,22 @@ class Xhgui_Controller_Run extends Xhgui_Controller
     public function flamegraph()
     {
         $request = $this->_app->request();
+        $metric = $request->get('metric') ?: 'wt';
+        $threshold = $request->get('threshold') ?: '0.01';
+        $map = Xhgui_Profile::METRIC_KEYS;
+        $content = 'metric参数支持：' . implode(',',array_keys($map));
+        if(isset($map[$metric])){
+            $metricInfo = $map[$metric];
+            $content .= "。当前metric: ".$metric.", ".$metricInfo['title']." ; ".$metricInfo['desc'];
+        }
         $profile = $this->_profiles->get($request->get('id'));
 
         $this->_template = 'runs/flamegraph.twig';
         $this->set(array(
             'profile' => $profile,
+            'content' => $content,
+            'metric'  => $metric,
+            'threshold' => $threshold,
             'date_format' => $this->_app->config('date.format'),
         ));
     }
