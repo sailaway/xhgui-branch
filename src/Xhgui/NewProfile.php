@@ -162,6 +162,8 @@ class Xhgui_NewProfile extends Xhgui_Profile
         }
         $node = $this->_data['profile'];
         $mainVal = floatval($node[$metric]);
+        $this->_visited = array();
+        $this->_nodes = array();
         $result = $this->getFlameDataByCallNode($node,$metric,$mainVal,$threshold,true);
 
         return array('data' => $result, 'sort' => $this->_visited);
@@ -178,6 +180,13 @@ class Xhgui_NewProfile extends Xhgui_Profile
             'name' => $node['function'],
             'value' => $value
         ];
+
+        if (!isset($this->_visited[$node['function']])) {
+            $index = count($this->_nodes);
+            $this->_visited[$node['function']] = $index;
+            $this->_nodes[] = $node['function'];
+        }
+
         if (!empty($node['children'])){
             $children = [];
             foreach ($node['children'] as $child){
