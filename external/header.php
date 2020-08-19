@@ -125,6 +125,12 @@ register_shutdown_function(
             $ret = tideways_xhprof_disable();
             // use the first main node
             $data['profile'] = $ret[0];
+            // 新增一个 main() 属性, Xhgui_Profiles中对main()节点有过滤和聚合等处理
+            $data['profile']['main()']['ct'] = $data['profile']['ct'];
+            $data['profile']['main()']['wt'] = $data['profile']['wt'];
+            $data['profile']['main()']['cpu'] = $data['profile']['cpu'];
+            $data['profile']['main()']['mu'] = $data['profile']['mu'];
+            $data['profile']['main()']['pmu'] = $data['profile']['pmu'];
         } else if ($extension == 'tideways' && extension_loaded('tideways')) {
             $data['profile'] = tideways_disable();
             $sqlData = tideways_get_spans();

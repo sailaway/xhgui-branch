@@ -31,19 +31,19 @@ class Xhgui_NewProfile extends Xhgui_Profile
         parent::__construct($data,$convert);
     }
 
-    private function processNode($parentNode,$node,&$result){
+    private function processNode($parentNode,$node){
         $func   = $node['function'];
         $parent = $parentNode['function'];
 
         $values = $this->_sumKeys([],$node);
 
         // Generate collapsed data.
-        if (isset($result[$func])) {
-            $result[$func] = $this->_sumKeys($result[$func], $values);
-            $result[$func]['parents'][] = $parent;
+        if (isset($this->_collapsed[$func])) {
+            $this->_collapsed[$func] = $this->_sumKeys($this->_collapsed[$func], $values);
+            $this->_collapsed[$func]['parents'][] = $parent;
         } else {
-            $result[$func] = $values;
-            $result[$func]['parents'] = array($parent);
+            $this->_collapsed[$func] = $values;
+            $this->_collapsed[$func]['parents'] = array($parent);
         }
 
         // Build the indexed data.
@@ -61,7 +61,7 @@ class Xhgui_NewProfile extends Xhgui_Profile
 
         if (is_array($node['children'])){
             foreach ($node['children'] as $child) {
-                $this->processNode($node,$child,$result);
+                $this->processNode($node,$child);
             }
         }
     }
@@ -79,9 +79,8 @@ class Xhgui_NewProfile extends Xhgui_Profile
      */
     protected function _process()
     {
-        $result = array();
-        $this->processNode(null,$this->_data['profile'],$result);
-        $this->_collapsed = $result;
+        $this->_collapsed = [];
+        $this->processNode(null,$this->_data['profile']);
     }
 
     /**

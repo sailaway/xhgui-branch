@@ -32,7 +32,7 @@ return array(
     'templates.path' => dirname(__DIR__) . '/src/templates',
     'date.format' => 'Y-m-d H:i:s',
     'detail.count' => 6,
-    'page.limit' => 100,
+    'page.limit' => 25,
 
     // Profile 1 in 100 requests.
     // You can return true to profile every request.

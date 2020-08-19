@@ -58,7 +58,7 @@ class Xhgui_Profiles
     {
         $conditions = array_merge(
             (array)$conditions,
-            array('simple_url' => $url)
+            array('meta.simple_url' => $url)
         );
         $options = array_merge($options, array(
             'conditions' => $conditions,
@@ -68,6 +68,7 @@ class Xhgui_Profiles
 
     public function paginate($options)
     {
+        file_put_contents("/data/www/xhgui-branch-medusa/cache/paginate.txt",json_encode($options));
         $opts = $this->_mapper->convert($options);
 
         $totalRows = $this->_collection->find(
@@ -83,7 +84,16 @@ class Xhgui_Profiles
         $projection = false;
         if (isset($options['projection'])) {
             if ($options['projection'] === true) {
-                $projection = array('meta' => 1, 'profile.main()' => 1);
+                $projection = array(
+                    'meta' => 1,
+                    'profile.main()' => 1,
+                    'profile.function' => 1,
+                    'profile.ct'  => 1,
+                    'profile.wt'  => 1,
+                    'profile.cpu' => 1,
+                    'profile.mu'  => 1,
+                    'profile.pmu'  => 1,
+                );
             } else {
                 $projection = $options['projection'];
             }
@@ -125,7 +135,7 @@ class Xhgui_Profiles
     public function getPercentileForUrl($percentile, $url, $search = array())
     {
         $result = $this->_mapper->convert(array(
-            'conditions' => $search + array('simple_url' => $url)
+            'conditions' => $search + array('meta.simple_url' => $url)
         ));
         $match = $result['conditions'];
 
@@ -133,13 +143,13 @@ class Xhgui_Profiles
         if (!empty($search['limit']) && $search['limit'][0] == "P") {
             $col = '$meta.request_ts';
         }
-
         $results = $this->_collection->aggregate(array(
             array('$match' => $match),
             array(
                 '$project' => array(
                     'date' => $col,
                     'profile.main()' => 1
+
                 )
             ),
             array(
