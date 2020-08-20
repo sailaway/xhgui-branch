@@ -46,6 +46,9 @@ return array(
 
     'profiler.filter_path' => array(
         '/data/www/xhgui-branch-medusa/webroot',//'F:/phpPro'
+    ),
+    'profiler.filter_url_prefix' => array(
+        '/abc/do'
     )
 
 );

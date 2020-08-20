@@ -79,6 +79,15 @@ $filterPath = Xhgui_Config::read('profiler.filter_path');
 if(is_array($filterPath)&&in_array($_SERVER['DOCUMENT_ROOT'],$filterPath)){
     return;
 }
+$filterUrlPrefix = Xhgui_Config::read('profiler.filter_url_prefix');
+if(is_array($filterUrlPrefix)){
+    foreach ($filterUrlPrefix as $prefix){
+        if (0 === strpos($_SERVER['REQUEST_URI'], $prefix)){
+            return;
+        }
+    }
+}
+
 
 if ((!extension_loaded('mongo') && !extension_loaded('mongodb')) && Xhgui_Config::read('save.handler') === 'mongodb') {
     error_log('xhgui - extension mongo not loaded');

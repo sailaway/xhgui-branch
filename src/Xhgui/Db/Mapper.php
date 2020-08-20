@@ -56,6 +56,9 @@ class Xhgui_Db_Mapper
         if (isset($search['simple_url'])) {
             $conditions['meta.simple_url'] = (string)$search['simple_url'];
         }
+        if (isset($search['meta.simple_url'])) {
+            $conditions['meta.simple_url'] = (string)$search['meta.simple_url'];
+        }
         if (!empty($search['request_start'])) {
             $conditions['meta.SERVER.REQUEST_TIME']['$gte'] = $this->_convertDate($search['request_start']);
         }
@@ -86,6 +89,14 @@ class Xhgui_Db_Mapper
             // is a good idea. Only one way to find out.
             $conditions['meta.url'] = array(
                 '$regex' => (string)$search['url'],
+                '$options' => 'i',
+            );
+        }
+        if (isset($search['meta.url'])) {
+            // Not sure if letting people use regex here
+            // is a good idea. Only one way to find out.
+            $conditions['meta.url'] = array(
+                '$regex' => (string)$search['meta.url'],
                 '$options' => 'i',
             );
         }
